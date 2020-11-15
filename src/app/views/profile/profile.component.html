@@ -1,0 +1,48 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-12 col-md-12">
+      <div class="card">
+        <div class="card-header">
+          الملف الشخصي
+        </div>
+        <div class="card-body">
+
+              <div class="input-group">
+                <span class="input-group-append">
+                  <button class="btn btn-secondary title-button" type="button">اسم المستخدم</button>
+                </span>
+                <input id="appendedInputButtons"  size="16"  [(ngModel)]="newUsername"  class="form-control" type="text" value={{user.username}}>
+                <button type="button" class="btn btn-sm btn-primary"  (click)="updateUser(user)">تعديل</button>
+              </div>
+
+              <div class="input-group">
+                <span class="input-group-append">
+                  <button class="btn btn-secondary title-button" type="button">الاسم كامل</button>
+                </span>
+                <input id="appendedInputButtons"   size="16" [(ngModel)]="newFullname" class="form-control" type="text" value={{user.full_name}}>
+                <button type="button" class="btn btn-sm btn-primary"   (click)="updateUser(user);">تعديل</button>
+              </div>
+
+              <div class="input-group">
+                <span class="input-group-append">
+                  <button class="btn btn-secondary title-button" type="button">الايميل</button>
+                </span>
+                <input id="appendedInputButtons" readonly="readonly" size="16" class="form-control" type="text" value={{user.email}}>
+              </div>
+
+              <div class="input-group">
+                <span class="input-group-append">
+                  <button class="btn btn-secondary title-button" type="button">نوع المستخدم</button>
+                </span>
+                <input id="appendedInputButtons" readonly="readonly"  size="16" class="form-control" type="text" value={{user.user_type_code}}>
+              </div>
+
+              <div class="input-group">
+                <span *ngIf='user.active === 1'  class="badge badge-success">مفعل </span>
+                <span *ngIf='user.active === 0'  class="badge badge-danger">غير مفعل </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

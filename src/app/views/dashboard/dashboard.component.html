@@ -1,0 +1,277 @@
+
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-6 col-lg-3">
+      <div class="card text-white bg-info">
+        <div class="card-body pb-0">
+          <button type="button" class="btn btn-transparent p-0 float-right">
+            <i class="icon-location-pin"></i>
+          </button>
+          <div class="text-value">{{totalCustomer}}</div>
+          <div>العملاء</div>
+        </div>
+            <!-- CHART CONTAINER -->
+
+        <div class="chart-wrapper mt-3 mx-3" style="height:70px;">
+          <canvas baseChart class="chart"
+          [datasets]="lineChart2Data"
+          [labels]="lineChart2Labels"
+          [options]="lineChart2Options"
+          [colors]="lineChart2Colours"
+          [legend]="lineChart2Legend"
+          [chartType]="lineChart2Type"></canvas>
+        </div>
+      </div>
+    </div><!--/.col-->
+    <div class="col-sm-6 col-lg-3">
+      <div class="card text-white bg-primary">
+        <div class="card-body pb-0">
+          <div class="btn-group float-right" dropdown>
+          </div>
+          <div class="text-value">{{totalSupplier}}</div>
+          <div>الموردين</div>
+        </div>
+        <div class="chart-wrapper mt-3 mx-3" style="height:70px;">
+          <canvas baseChart class="chart"
+                  [datasets]="lineChart1Data"
+                  [labels]="lineChart1Labels"
+                  [options]="lineChart1Options"
+                  [colors]="lineChart1Colours"
+                  [legend]="lineChart1Legend"
+                  [chartType]="lineChart1Type"></canvas>
+        </div>
+      </div>
+    </div><!--/.col-->
+    <div class="col-sm-6 col-lg-3">
+      <div class="card text-white bg-warning">
+        <div class="card-body pb-0">
+          <div class="btn-group float-right" dropdown>
+          </div>
+          <div class="text-value">{{totalOrders}}</div>
+          <div>الطلبات</div>
+        </div>
+        <div class="chart-wrapper mt-3" style="height:70px;">
+          <canvas baseChart class="chart"
+          [datasets]="lineChart3Data"
+          [labels]="lineChart3Labels"
+          [options]="lineChart3Options"
+          [colors]="lineChart3Colours"
+          [legend]="lineChart3Legend"
+          [chartType]="lineChart3Type"></canvas>
+        </div>
+      </div>
+    </div><!--/.col-->
+    <div class="col-sm-6 col-lg-3">
+      <div class="card text-white bg-danger">
+        <div class="card-body pb-0">
+          <div class="btn-group float-right" dropdown>
+          </div>
+          <div class="text-value">{{totalUsers}}</div>
+          <div>المستخدمين</div>
+        </div>
+        <div class="chart-wrapper mt-3 mx-3" style="height:70px;">
+          <canvas baseChart class="chart"
+          [datasets]="barChart1Data"
+          [labels]="barChart1Labels"
+          [options]="barChart1Options"
+          [colors]="barChart1Colours"
+          [legend]="barChart1Legend"
+          [chartType]="barChart1Type"></canvas>
+        </div>
+      </div>
+    </div><!--/.col-->
+  </div><!--/.row-->
+  <div class="card">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="card">
+               <canvas id="barChart"></canvas>
+              </div>
+            </div><!--/.col-->
+            <div class="col-md-6">
+              <div class="card">
+                <canvas id="lineChart"></canvas>
+              </div>
+            </div><!--/.col-->
+          </div><!--/.row-->
+        </div><!--/.col-->
+      </div><!--/.row-->
+    </div>
+
+  </div>
+  <!--/.card-->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-6">
+
+              <div class="progress-group mb-4">
+                <div class="progress-group-prepend">
+                  <span class="progress-group-text">
+                   العملاء
+                  </span>
+                </div>
+              </div>
+
+            </div><!--/.col-->
+          </div><!--/.row-->
+          <br>
+          <table class="table table-responsive-sm table-hover table-outline mb-0">
+            <thead class="thead-light">
+              <tr>
+
+                <th class="text-center">اسم العميل</th>
+                <th class="text-center">البلد</th>
+                <th class="text-center">المدينه</th>
+                <th class="text-center">الهاتف</th>
+                <th class="text-center">التفعيل /الالغاء</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor = "let customer of customers">
+                <td>
+                  <div>{{customer.customer_fullname}}</div>
+                </td>
+                <td>
+                  <div>{{customer.country_name}}</div>
+                  <div class="small text-muted">
+                  </div>
+                </td>
+                <td>
+                  <div>{{customer.city_name}}</div>
+                  <div class="small text-muted">
+                  </div>
+                </td>
+                <td>
+                  <div>{{customer.customer_phone_1}}</div>
+                  <div class="small text-muted">
+                  </div>
+                </td>
+                <td>
+                  <div>
+                    <button type="button" *ngIf='customer.active === 1' class="btn btn-sm btn-block btn-success">مفعل</button>
+                    <button type="button" *ngIf='customer.active === 0' class="btn btn-sm btn-block btn-danger">غير مفعل </button>
+                  </div>
+                  <div class="small text-muted">
+                    <span></span> | Registered: {{customer.created_on | date :'dd/MM/yyyy - hh:mm a'}}
+                  </div>
+                </td>
+
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div><!--/.col-->
+    <div class="col-md-12">
+      <div class="card">
+
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-6">
+
+              <div class="progress-group mb-4">
+                <div class="progress-group-prepend">
+                  <span class="progress-group-text">
+                   اخر الطلبات
+                  </span>
+                </div>
+              </div>
+
+            </div><!--/.col-->
+          </div><!--/.row-->
+          <br>
+          <table class="table table-responsive-sm table-hover table-outline mb-0">
+            <thead class="thead-light">
+              <tr>
+
+                <th class="text-center">رقم الطلب</th>
+                <th class="text-center">بلد الارسال</th>
+                <th class="text-center">اسم المرسل</th>
+                <th class="text-center">سعر الطلب</th>
+                <th class="text-center">كود الخدمة</th>
+                <th class="text-center">حالة الطلب</th>
+                <th class="text-center">نوع الطلب</th>
+                <th class="text-center">معاد تسليم الطلب</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor = "let order of customersOrders">
+                <td>
+                  <div>{{order.order_ref_key}}</div>
+                </td>
+                <td>
+                  <div>{{order.deliver_country_name}}</div>
+                  <div class="small text-muted">
+                    <span>City</span> |{{order.deliver_to_city_name}}
+                  </div>
+                </td>
+                <td>
+                  <div>{{order.sender_name}}</div>
+                  <div class="small text-muted">
+                    <span>الهاتف</span> |{{order.sender_mobile}}
+                  </div>
+                </td>
+                <td>
+                  <div>{{order.order_price}}</div>
+                  <div class="small text-muted">
+                  </div>
+                </td>
+                <td>
+                  <div>{{order.service_code}}</div>
+                  <div class="small text-muted">
+                  </div>
+                </td>
+                <td>
+                  <div>{{order.status_code}}</div>
+                  <div class="small text-muted">
+                  </div>
+                </td>
+                <td>
+                  <div>{{order.order_type}}</div>
+                </td>
+                <td>
+                  <div>{{order.delivery_date | date :'dd/MM/yyyy - hh:mm a'}}</div>
+                  <div class="small text-muted">
+                  </div>
+                </td>
+
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div><!--/.col-->
+  </div><!--/.row-->
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
+       <canvas id="barChart"></canvas>
+      </div>
+    </div><!--/.col-->
+    <div class="col-md-6">
+      <div class="card">
+        <canvas id="lineChart"></canvas>
+      </div>
+    </div><!--/.col-->
+  </div><!--/.row-->
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+       <canvas id="lineChart"></canvas>
+      </div>
+    </div><!--/.col-->
+  </div><!--/.row-->
+
+
+</div>
+
+

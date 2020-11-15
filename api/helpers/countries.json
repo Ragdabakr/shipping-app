@@ -1,0 +1,24 @@
+[
+
+  {
+    "alpha_2_code": "SA",
+    "enCountryName": "Saudi arabia",
+    "arCountryName": "السعودية",
+    "enNationality": "Saudi",
+    "arNationality": "سعودي",
+    "phoneCode": "966",
+    "flag": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Flag_of_Saudi_Arabia.svg"
+  },
+  {
+    "alpha_2_code": "EG",
+    "enCountryName": "Egypt",
+    "arCountryName": "مصر",
+    "enNationality": "Egyptian",
+    "arNationality": "مصري",
+    "phoneCode": "002",
+    "flag": "https://cdn.countryflags.com/thumbs/egypt/flag-400.png"
+  }
+
+
+
+]

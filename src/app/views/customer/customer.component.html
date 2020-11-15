@@ -1,0 +1,455 @@
+
+<div class="animated fadeIn">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-header">
+            <i class="fa fa-align-justify"></i> العملاء
+          </div>
+          <div class="card-body">
+            <p-toolbar styleClass="p-mb-4">
+              <ng-template pTemplate="left">
+                  <div class="col-6 col-sm-4 col-md-2 col-xl mb-3 mb-xl-0">
+                    <button type="button" class="btn btn-block btn-primary" (click)="createNewCustomer()">اضافة عميل جديد</button>
+                  </div>
+                </ng-template>
+            </p-toolbar>
+
+          <p-table #dt [value]="customers" dataKey="customer_id" [rows]="10" [showCurrentPageReport]="true" [paginator]="true" [rowsPerPageOptions]="[5,10,15,20]"
+          currentPageReportTemplate="إظهار {first} الى {last} من  {totalRecords} العملاء" [style]="{'width':'100%','overflow':'auto!important'}"
+          [resizableColumns]="true" columnResizeMode="expand" styleClass="ui-table-customers" [autoLayout]="true"
+          [responsive]="true" selectionMode="single"
+          [filterDelay]="0" [globalFilterFields]="['customer_fullname','customer_email','created_on','customer_phone_1','customer_phone_2','country','city']">
+
+          <ng-template pTemplate="caption">
+            <div class="ui-table-globalfilter-container">
+              <div class="form-group">
+                <div class="input-group">
+                  <input class="form-control" pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="بحث" >
+                  <div class="input-group-append">
+                    <span class="input-group-text"><i class="fa fa-search"></i></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+
+                <th pSortableColumn="customer_fullname">الاسم بالكامل <p-sortIcon field="customer_fullname"></p-sortIcon></th>
+                <th pSortableColumn="customer_email">البريد الالكترونى <p-sortIcon field="customer_email"></p-sortIcon></th>
+                <th pSortableColumn="customer_phone_1">الهاتف 1 <p-sortIcon field="customer_phone_1"></p-sortIcon></th>
+                <!-- <th pSortableColumn="customer_phone_2">الهاتف 2 <p-sortIcon field="customer_phone_2"></p-sortIcon></th> -->
+                <th pSortableColumn="created_on"> تاريخ التسجيل <p-sortIcon field="created_on"></p-sortIcon></th>
+                <th pSortableColumn="country">البلد<p-sortIcon field="country"></p-sortIcon></th>
+                <th pSortableColumn="city">المدينة<p-sortIcon field="city"></p-sortIcon></th>
+                <th pSortableColumn="active">التفعيل <p-sortIcon field="active"></p-sortIcon></th>
+                <th >تعديل</th>
+                <th >الطلبات</th>
+            </tr>
+         </ng-template>
+          <ng-template pTemplate="body" let-customer>
+            <tr>
+                <td>{{customer.customer_fullname }}</td>
+                <td>{{customer.customer_email}}</td>
+                <td>{{customer.customer_phone_1}}</td>
+                <!-- <td>{{customer.customer_phone_2}}</td> -->
+                 <!-- <td>{{customer.created_by}}</td> -->
+                <td >{{customer.created_on | date :'dd/MM/yyyy - hh:mm a' }}</td>
+                <td>{{customer.country_name}}</td>
+                <td>{{customer.city_name}}</td>
+                <td>
+                  <button type="button" *ngIf='customer.active === 1' class="btn btn-sm btn-block btn-success" (click)="disableCustomer(customer.customer_id)">مفعل</button>
+                  <button type="button" *ngIf='customer.active === 0' class="btn btn-sm btn-block btn-danger" (click)="enableCustomer(customer.customer_id)">غير مفعل </button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-warning" (click)="editCustomer(customer);">تعديل</button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-info" (click)="customOrder(customer.customer_id);">الطلبات </button>
+                </td>
+             </tr>
+          </ng-template>
+        </p-table>
+       </div>
+     </div>
+     <p-dialog [(visible)]="customerDialog" [style]="{width: '450px'}" header="Customer Details" [modal]="true" styleClass="p-fluid">
+      <ng-template pTemplate="content">
+      <form [formGroup]="customerForm">
+        <div class="content with-padding padding-bottom-0">
+            <div class="row">
+                <div class="col-xl-12">
+                        <div class="col-md-12">
+                          <div class="submit-field form-group"
+                           [ngClass]="{'has-error': customerForm.get('customer_fullname')?.errors &&
+                                       (customerForm.get('customer_fullname').touched || customerForm.get('customer_fullname').dirty)}">
+                              <h5 class="control-label">الاسم الكامل</h5>
+                              <input  type="text" class="form-control" formControlName='customer_fullname' value='customer.customer_fullname'>
+                              <span class="alert alert-danger" *ngIf="customerForm.get('customer_fullname')?.errors &&
+                              (customerForm.get('customer_fullname').touched || customerForm.get('customer_fullname').dirty)">
+                              <span  *ngIf="customerForm.get('customer_fullname').errors.required">اسم الكامل مطلوب</span>
+                              <span  *ngIf="customerForm.get('customer_fullname').errors.minlength || customerForm.get('customer_fullname').errors.maxlength">اقل عدد حروف متاح 8 ,اكثر عدد حروف متاح 50</span>
+                              </span>
+                          </div>
+                      </div>
+                    <div class="col-md-12">
+                      <div class="submit-field form-group"
+                       [ngClass]="{'has-error': customerForm.get('customer_email')?.errors &&
+                                   (customerForm.get('customer_email').touched || customerForm.get('customer_email').dirty)}">
+                                   <h5 class="control-label">الايميل</h5>
+                          <input  type="text" class="form-control" formControlName='customer_email' value='customer.customer_email'>
+                          <span class="alert alert-danger" *ngIf="customerForm.get('customer_email')?.errors &&
+                          (customerForm.get('customer_email').touched || customerForm.get('customer_email').dirty)">
+                          <span  *ngIf="customerForm.get('customer_email').errors?.required">الايميل مطلوب</span>
+                          <span  *ngIf="customerForm.get('customer_email').errors?.email">الايميل غير صحيح</span>
+                          </span>
+                      </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="submit-field form-group"
+                     [ngClass]="{'has-error': customerForm.get('customer_phone_1')?.errors &&
+                                 (customerForm.get('customer_phone_1').touched || customerForm.get('customer_phone_1').dirty)}">
+                        <h5 class="control-label">رقم الهاتف 1</h5>
+                        <input  type="text" class="form-control" formControlName='customer_phone_1' value='customer.customer_phone_1'>
+                        <span class="alert alert-danger" *ngIf="customerForm.get('customer_phone_1')?.errors &&
+                        (customerForm.get('customer_phone_1').touched || customerForm.get('customer_phone_1').dirty)">
+                        <span  *ngIf="customerForm.get('customer_phone_1').errors?.required">الهاتف 1 مطلوب</span>
+                        <span  *ngIf="customerForm.get('customer_phone_1').errors?.minlength || customerForm.get('customer_phone_1').errors.maxlength">اقل عدد الأرقام  متاح 10 ,اكثر عدد الأرقام  متاح 50</span>>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="submit-field form-group"
+                   [ngClass]="{'has-error': customerForm.get('customer_phone_2')?.errors &&
+                               (customerForm.get('customer_phone_2').touched || customerForm.get('customer_phone_2').dirty)}">
+                      <h5 class="control-label">رقم الهاتف 2</h5>
+                      <input  type="text" class="form-control" formControlName='customer_phone_2' value='customer.customer_phone_2'>
+                      <span class="alert alert-danger" *ngIf="customerForm.get('customer_phone_2')?.errors &&
+                      (customerForm.get('customer_phone_2').touched || customerForm.get('customer_phone_2').dirty)">
+                      <span  *ngIf="customerForm.get('customer_phone_2').errors?.required">الهاتف 2 مطلوب</span>
+                      <span  *ngIf="customerForm.get('customer_phone_2').errors?.minlength || customerForm.get('customer_phone_2').errors.maxlength">اقل عدد الأرقام  متاح 10 ,اكثر عدد الأرقام  متاح 50</span>
+                      </span>
+                  </div>
+              </div>
+
+              <div class="col-md-12">
+                <h5 class="control-label" > البلد </h5>
+                <select  class="form-control" data-size="7"  (change)="onCountryEditChange($event.target.value)" formControlName="country_id"  value='customer.country_name'  title="المدينة" >
+                    <option *ngFor="let country of countries"  [value]="country.country_id">{{ country.country_name}}</option>
+                </select>
+              </div>
+
+              <div class="col-md-12">
+                <h5 class="control-label" > المدينة </h5>
+                <select  class="form-control" data-size="7" formControlName="city_id"  value='customer.city_name'  title="المدينة" >
+                    <option *ngFor="let city of allCities"  [value]="city.city_id">{{ city.city_name}}</option>
+                </select>
+              </div>
+      </div>
+    </div>
+    </div>
+        <button type="button"  class="btn btn-primary" (click)="submitEditCustomerForm(customerForm , customer.customer_id)">حفظ</button>
+        <button type="button" class="btn btn-danger" (click)="hideDialog()">الغاء</button>
+        </form>
+       </ng-template>
+      </p-dialog>
+
+      <p-dialog [(visible)]="newCustomerDialog" [style]="{width: '750px'}" header="اضافة عميل جديد" [modal]="true" styleClass="p-fluid">
+        <ng-template pTemplate="content">
+
+        <form [formGroup]="newCustomerForm">
+          <div class="content with-padding padding-bottom-0">
+              <div class="row">
+                  <div class="col-xl-12">
+                    <div class="col-md-12">
+                      <div class="input-group"
+                       [ngClass]="{'has-error': newCustomerForm.get('customer_fullname')?.errors &&
+                                   (newCustomerForm.get('customer_fullname').touched || newCustomerForm.get('customer_fullname').dirty)}">
+                            <span class="input-group-append">
+                            <button class="btn btn-secondary title-button" type="button">الاسم الكامل</button>
+                          </span>
+                          <input  type="text" class="form-control" formControlName='customer_fullname'>
+                          <span class="alert alert-danger" *ngIf="newCustomerForm.get('customer_fullname')?.errors &&
+                          (newCustomerForm.get('customer_fullname').touched || newCustomerForm.get('customer_fullname').dirty)">
+                          <span  *ngIf="newCustomerForm.get('customer_fullname').errors.required">اسم الكامل مطلوب</span>
+                          <span  *ngIf="newCustomerForm.get('customer_fullname').errors.minlength || newCustomerForm.get('customer_fullname').errors.maxlength">اقل عدد حروف متاح 8 ,اكثر عدد حروف متاح 50</span>
+                          </span>
+                      </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="input-group"
+                    [class.invalid]="newCustomerForm?.errors && (newCustomerForm.touched || newCustomerForm.dirty)">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button">اسم المستخدم</button>
+                    </span>
+                        <input  type="text" class="form-control" formControlName='username' >
+                        <span class="alert alert-danger" *ngIf="newCustomerForm.get('username')?.errors &&
+                        (newCustomerForm.get('username').touched || newCustomerForm.get('username').dirty)">
+                        <span  *ngIf="newCustomerForm.get('username').errors.required">اسم المستخدم مطلوب</span>
+                        <span  *ngIf="newCustomerForm.get('username').errors.minlength || newCustomerForm.get('username').errors.maxlength">اقل عدد حروف متاح 4 ,اكثر عدد حروف متاح 50  </span>
+                        </span>
+                    </div>
+                </div>
+                  <div class="col-md-12">
+                    <div class="input-group"
+                     [ngClass]="{'has-error': newCustomerForm.get('customer_email')?.errors &&
+                                 (newCustomerForm.get('customer_email').touched || newCustomerForm.get('customer_email').dirty)}">
+                                 <span class="input-group-append">
+                                  <button class="btn btn-secondary title-button" type="button">الايميل</button>
+                                </span>
+                        <input  type="text" class="form-control" formControlName='customer_email'>
+                        <span class="alert alert-danger" *ngIf="newCustomerForm.get('customer_email')?.errors &&
+                        (newCustomerForm.get('customer_email').touched || newCustomerForm.get('customer_email').dirty)">
+                        <span  *ngIf="newCustomerForm.get('customer_email').errors?.required">الايميل مطلوب</span>
+                        <span  *ngIf="newCustomerForm.get('customer_email').errors?.email">الايميل غير صحيح</span>
+                        </span>
+                    </div>
+                </div>
+
+              <div class="col-md-12">
+                <div class="input-group"
+                [class.invalid]="newCustomerForm?.errors && (newCustomerForm.touched || newCustomerForm.dirty)">
+                <span class="input-group-append">
+                  <button class="btn btn-secondary title-button" type="button"> كلمة المرور</button>
+                </span>
+                    <input  type="text" class="form-control" formControlName='password' >
+                    <span class="alert alert-danger" *ngIf="newCustomerForm.get('password')?.errors &&
+                    (newCustomerForm.get('password').touched || newCustomerForm.get('password').dirty)">
+                    <span  *ngIf="newCustomerForm.get('password').errors.required">اسم المستخدم مطلوب</span>
+                    <span  *ngIf="newCustomerForm.get('password').errors.minlength" >اقل عدد حروف متاح 8 </span>
+                    </span>
+                </div>
+            </div>
+
+                    <div class="col-md-12">
+                      <div class="input-group">
+                            <span class="input-group-append">
+                            <button class="btn btn-secondary title-button" type="button">الهاتف 1</button>
+                          </span>
+                       <ng-select  class="form-control" data-size="7"   formControlName="customer_phone_1_code">
+                        <ng-option id="first" hidden="hidden" selected value="" >  <img height="20" width="20" src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Flag_of_Saudi_Arabia.svg"/> 966</ng-option>
+                        <ng-option *ngFor="let item of countriesCode" [value]="item.country_code_id">
+                          <img height="20" width="20" [src]="item.flag"/> {{item.country_code_id}}
+                        </ng-option>
+                      </ng-select>
+                      <input  type="tel" class="form-control" formControlName='customer_phone_1_phone'  minlength="9"  maxlength="11">
+                      </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="input-group">
+                        <span class="input-group-append">
+                          <button class="btn btn-secondary title-button" type="button">الهاتف 2</button>
+                        </span>
+
+                        <ng-select  class="form-control" data-size="7"   formControlName="customer_phone_2_code">
+                          <ng-option id="first" hidden="hidden" selected value="" >  <img height="20" width="20" src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Flag_of_Saudi_Arabia.svg"/> 966</ng-option>
+                          <ng-option *ngFor="let item of countriesCode" [value]="item.country_code_id">
+                            <img height="20" width="20" [src]="item.flag"/> {{item.country_code_id}}
+                          </ng-option>
+                        </ng-select>
+                        <input  type="tel" class="form-control" formControlName='customer_phone_2_phone'   minlength="9"  maxlength="11">
+                    </div>
+                </div>
+                <div class="col-md-12 input-group">
+                  <span class="input-group-append">
+                    <button class="btn btn-secondary title-button" type="button">البلد</button>
+                  </span>
+                  <select  class="form-control" (change)="onCountryChange($event.target.value)" data-size="7" formControlName="country_id"  title="المستخدم" >
+                    <option *ngFor="let country of countries" [value]="country.country_id">{{country.country_name}}</option>
+                </select>
+                </div>
+                <div class="col-md-12 input-group">
+                  <span class="input-group-append">
+                    <button class="btn btn-secondary title-button" type="button">المدينة</button>
+                  </span>
+                  <select  class="form-control" data-size="7" formControlName="city_id"   title="المدينة" >
+                      <option *ngFor="let city of cities"  [value]="city.city_id">{{ city.city_name}}</option>
+                  </select>
+                </div>
+                  </div>
+              </div>
+            </div>
+              <br/>
+              <button type="button" class="btn btn-primary" (click)="submitCreateForm(newCustomerForm)">حفظ</button>
+              <button type="button " class="btn btn-danger"  (click)="hideCustomerDialog()">الغاء</button>
+          </form>
+         </ng-template>
+        </p-dialog>
+
+    <!-- Start order details Dialog-->
+
+
+   <p-dialog *ngIf="customerOrder" [(visible)]="detailsDialog" [style]="{width: '750px'}" header="طلبات العميل" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+      <div class="row">
+        عدد الطلبات للعميل : {{customerOrderlength}}
+        <div class="col-sm-12 col-md-12"  *ngFor="let order of customerOrder">
+          <br/>
+          <div class="card">
+            <div class="card-header">
+            بيانات الطلب
+            </div>
+            <div class="card-body">
+              <div class="row">
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button">رقم الطلب </button>
+                    </span>
+                    <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.order_id}}>
+                  </div>
+
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button">الرقم المرجعي للطلب</button>
+                    </span>
+                    <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.order_ref_key}}>
+                  </div>
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button">وزن الطلب </button>
+                    </span>
+                    <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.order_weight}}>
+                  </div>
+
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button">سعر الطلب </button>
+                    </span>
+                    <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.order_price}}>
+                  </div>
+
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn
+
+
+
+
+                      -secondary title-button" type="button"> نوع الطلب</button>
+                    </span>
+                    <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.order_type}}>
+                  </div>
+
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button"> رقم الخدمة</button>
+                    </span>
+                    <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.service_code}}>
+                  </div>
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button"> حالة الطلب</button>
+                    </span>
+                    <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.status_code}}>
+                  </div>
+
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button"> تاريخ  الطلب </button>
+                    </span>
+                    <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.order_date}}>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+              بيانات المرسل
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button"> رقم المرسل </button>
+                    </span>
+                    <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.customer_id}}>
+                  </div>
+
+                    <div class="input-group col-sm-6 col-md-6">
+                      <span class="input-group-append">
+                        <button class="btn btn-secondary title-button" type="button">اسم المرسل </button>
+                      </span>
+                      <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.sender_name}}>
+                    </div>
+
+                    <div class="input-group col-sm-6 col-md-6">
+                      <span class="input-group-append">
+                        <button class="btn btn-secondary title-button" type="button">  هاتف المرسل</button>
+                      </span>
+                      <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.sender_mobile}}>
+                    </div>
+                    <div class="input-group col-sm-6 col-md-6">
+                      <span class="input-group-append">
+                        <button class="btn btn-secondary title-button" type="button"> مدينة ارسال الطلب </button>
+                      </span>
+                      <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.sender_city_name}}>
+                    </div>
+
+                    <div class="input-group col-sm-12 col-md-12">
+                      <span class="input-group-append">
+                        <button class="btn btn-secondary title-button" type="button"> تاريخ ارسال الطلب </button>
+                      </span>
+                      <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.sender_date}}>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                بيانات استلام الطلب
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                      <div class="input-group col-sm-6 col-md-6">
+                        <span class="input-group-append">
+                          <button class="btn btn-secondary title-button" type="button">اسم المستلم </button>
+                        </span>
+                        <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.deliver_to_name}}>
+                      </div>
+
+                      <div class="input-group col-sm-6 col-md-6">
+                        <span class="input-group-append">
+                          <button class="btn btn-secondary title-button" type="button">   هاتف </button>
+                        </span>
+                        <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.deliver_to_mobile}}>
+                      </div>
+                      <div class="input-group col-sm-6 col-md-6">
+                        <span class="input-group-append">
+                          <button class="btn btn-secondary title-button" type="button"> مدينة استلام الطلب </button>
+                        </span>
+                        <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.deliver_to_city_name}}>
+                      </div>
+
+                      <div class="input-group col-sm-6 col-md-6">
+                        <span class="input-group-append">
+                          <button class="btn btn-secondary title-button" type="button"> تاريخ تسليم الطلب </button>
+                        </span>
+                        <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.delivery_date}}>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+                <hr/>
+            </div>
+          </div>
+     </ng-template>
+    </p-dialog>
+
+  <!-- End order details Dialog-->
+
+    </div>
+   </div>
+  </div>
+
+  <script>
+     var window_width = $(window).width();
+	if(window_width < 480){
+		document.getElementById("first").text = "";
+	}
+
+    </script>

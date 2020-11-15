@@ -1,0 +1,47 @@
+.input-group{
+  margin-bottom: 20px;
+}
+.title-button{
+  width:150px;
+}
+.badge{
+    width: 140px;
+    height: 30px;
+    font-size: 14px;
+    padding-top: 7px;
+}
+:host ::ng-deep .p-dialog .product-image {
+  width: 150px;
+  margin: 0 auto 2rem auto;
+  display: block;
+}
+.buttons{
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+.help-block{
+  color: white;
+  background-color: #ff0000b0;
+  border-radius: 5px;
+  font-size: 12px;
+  padding:5px;
+
+}
+.submit-field{
+  margin-bottom: 10px;
+}
+hr {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 0;
+  border-top: 5px solid rgb(0 0 0 / 38%);
+}
+.alert-danger {
+  top: 0px;
+  float: left;
+  width: 100%;
+  color: #813838;
+  background-color: #fee2e1;
+  border-color: #fdd6d6;
+}
+

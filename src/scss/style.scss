@@ -1,0 +1,28 @@
+// If you want to override variables do it here
+@import "variables";
+
+// Import styles
+@import "~@coreui/coreui/scss/coreui";
+
+// If you want to add something do it here
+@import "custom";
+
+
+.ng-dropdown-panel {
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+  opacity: 0;
+  position: absolute;
+  width: 96% !important;
+  z-index: 1050;
+  border: 1px solid #ccc !important;
+  background-color: #f3f3f3 !important;
+}
+.ng-option:first-child{
+	display: none !important;
+}
+
+.logout{
+  margin-right: 80%;
+}
+

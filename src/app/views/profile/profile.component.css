@@ -1,0 +1,12 @@
+.input-group{
+  margin-bottom: 20px;
+}
+.title-button{
+  width:150px;
+}
+.badge{
+    width: 140px;
+    height: 30px;
+    font-size: 14px;
+    padding-top: 7px;
+}

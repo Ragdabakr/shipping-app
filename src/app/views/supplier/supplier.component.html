@@ -1,0 +1,425 @@
+
+<div class="animated fadeIn">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-header">
+            <i class="fa fa-align-justify"></i> الموردين
+          </div>
+          <div class="card-body">
+            <p-toolbar styleClass="p-mb-4">
+              <ng-template pTemplate="left">
+                  <div class="col-6 col-sm-4 col-md-2 col-xl mb-3 mb-xl-0">
+                    <button type="button" class="btn btn-block btn-primary" (click)="createNewSupplier()">اضافة مورد جديد</button>
+                  </div>
+                </ng-template>
+            </p-toolbar>
+
+          <p-table #dt [value]="suppliers" dataKey="supplier_id" [rows]="10" [showCurrentPageReport]="true" [paginator]="true" [rowsPerPageOptions]="[5,10,15,20]"
+          currentPageReportTemplate="إظهار {first} الى {last} من  {totalRecords} الموردين" [style]="{'width':'100%','overflow':'auto!important'}"
+          [resizableColumns]="true" columnResizeMode="expand" styleClass="ui-table-suppliers" [autoLayout]="true"
+          [responsive]="true" selectionMode="single"
+          [filterDelay]="0" [globalFilterFields]="['supplier_fullname','supplier_email','created_on' , 'active']">
+
+          <ng-template pTemplate="caption">
+            <div class="ui-table-globalfilter-container">
+              <div class="form-group">
+                <div class="input-group">
+                  <input class="form-control" pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="بحث" >
+                  <div class="input-group-append">
+                    <span class="input-group-text"><i class="fa fa-search"></i></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+                <th pSortableColumn="supplier_fullname">الاسم بالكامل <p-sortIcon field="supplier_fullname"></p-sortIcon></th>
+                <th pSortableColumn="supplier_email">البريد الالكترونى <p-sortIcon field="supplier_email"></p-sortIcon></th>
+                <th pSortableColumn="supplier_phone">رقم الهاتف  <p-sortIcon field="supplier_phone"></p-sortIcon></th>
+                <th pSortableColumn="created_on">تاريخ التسجيل <p-sortIcon field="created_on"></p-sortIcon></th>
+                <th pSortableColumn="country">البلد<p-sortIcon field="country"></p-sortIcon></th>
+                <th pSortableColumn="city">المدينة<p-sortIcon field="city"></p-sortIcon></th>
+                <th pSortableColumn="active">التفعيل <p-sortIcon field="active"></p-sortIcon></th>
+                <th pSortableColumn="apiKey" >إظهار/إنشاء <p-sortIcon field="apiKey"></p-sortIcon></th>
+                <th >التعديل</th>
+                <th >الطلبات</th>
+            </tr>
+         </ng-template>
+          <ng-template pTemplate="body" let-supplier>
+            <tr>
+                <td>{{supplier.supplier_fullname }}</td>
+                <td>{{supplier.supplier_email}}</td>
+                <td>{{supplier.supplier_phone}}</td>
+                <td >{{supplier.created_on | date :'dd/MM/yyyy - hh:mm a' }}</td>
+                <td>{{supplier.country_name}}</td>
+                <td>{{supplier.city_name}}</td>
+                <td>
+                  <button type="button" *ngIf='supplier.active === 1' class="btn btn-block btn-success" (click)="disableSupplier(supplier.supplier_id)">مفعل</button>
+                  <button type="button" *ngIf='supplier.active === 0' class="btn btn-block btn-danger" (click)="enableSupplier(supplier.supplier_id)">غير مفعل </button>
+                </td>
+                <td>
+                  <button type="button" *ngIf='supplier.api_key === null' class="btn btn-block btn-success" (click)="generateAPI_Key(supplier.supplier_id)">إنشاء</button>
+                  <button type="button" *ngIf='supplier.api_key !== null' class="btn btn-block btn-danger" (click)="showApiKey(supplier)"> إظهار </button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-warning" (click)="editSupplier(supplier)">تعديل</button>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-info" (click)="supplierOrder(supplier.supplier_id);">الطلبات </button>
+              </td>
+             </tr>
+          </ng-template>
+        </p-table>
+       </div>
+     </div>
+
+     <p-dialog [(visible)]="ApiKeyDialog" [style]="{width: '450px'}" header="Api Key" [modal]="true" styleClass="p-fluid">
+      <ng-template pTemplate="content">
+        <div class="content with-padding padding-bottom-0">
+          <div class="row">
+          <div class="col-xl-12">
+            <input type="text" class="form-control" #api_key value='{{supplier.api_key}}'>
+          </div>
+         </div>
+        </div>
+        <button class="btn btn-success" (click)="CopyApiKey(supplier)">
+          <i class="fa fa-clipboard"></i>
+        </button>
+          <button type="button" class="btn btn-danger" (click)="hideApiDialog()">الغاء</button>
+        </ng-template>
+      </p-dialog>
+
+     <p-dialog [(visible)]="supplierDialog" [style]="{width: '750px'}" header="تعديل معلومات المورد" [modal]="true" styleClass="p-fluid">
+      <ng-template pTemplate="content">
+      <form [formGroup]="supplierForm">
+        <div class="content with-padding padding-bottom-0">
+            <div class="row">
+                <div class="col-xl-12">
+
+                  <div class="col-md-12">
+                    <div class="submit-field input-group"
+                     [ngClass]="{'has-error': supplierForm.get('supplier_fullname')?.errors &&
+                                 (supplierForm.get('supplier_fullname').touched || supplierForm.get('supplier_fullname').dirty)}">
+                                 <span class="input-group-append">
+                                  <button class="btn btn-secondary title-button" type="button">الاسم الكامل</button>
+                                </span>
+                        <input  type="text" class="form-control" formControlName='supplier_fullname' value='supplier.supplier_fullname'>
+                        <span class="alert alert-danger" *ngIf="supplierForm.get('suppplier_fullname')?.errors &&
+                        (supplierForm.get('supplier_fullname').touched || supplierForm.get('supplier_fullname').dirty)">
+                        <span  *ngIf="supplierForm.get('supplier_fullname').errors.required">اسم الكامل مطلوب</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                  <div class="submit-field input-group"
+                   [ngClass]="{'has-error': supplierForm.get('supplier_email')?.errors &&
+                               (supplierForm.get('supplier_email').touched || supplierForm.get('supplier_email').dirty)}">
+                               <span class="input-group-append">
+                                <button class="btn btn-secondary title-button" type="button">الايميل</button>
+                              </span>
+                      <input  type="text" class="form-control" formControlName='supplier_email' value="supplier.supplier_email">
+                      <span class="alert alert-danger" *ngIf="supplierForm.get('supplier_email')?.errors &&
+                      (supplierForm.get('supplier_email').touched || supplierForm.get('supplier_email').dirty)">
+                      <span  *ngIf="supplierForm.get('supplier_email').errors?.required">الايميل مطلوب</span>
+                      <span  *ngIf="supplierForm.get('supplier_email').errors?.email">الايميل غير صحيح</span>
+                      </span>
+                  </div>
+              </div>
+
+            <div class="col-md-12">
+              <div class="input-group">
+                  <span class="input-group-append">
+                    <button class="btn btn-secondary title-button" type="button">الهاتف</button>
+                  </span>
+                  <input value='supplier.supplier_phone'  type="tel" class="form-control" formControlName='supplier_phone_phone'   minlength="9"  maxlength="11">
+                  <ng-select
+                  maxLength="30"
+                  [items]="countriesCode"
+                  bindValue="country_code_id"
+                  [bindLabel]="'country_code_id'"
+                  [active]="countriesCode"
+                  formControlName="supplier_phone_code">
+                  <ng-template  ng-label-tmp let-item="item">
+                            {{item.country_code_id}}<img height="30" width="30" [src]="item.flag"/>
+                        </ng-template>
+                        <ng-template  ng-option-tmp let-item="item" let-index="index">
+                          <img height="15" width="15" [src]="item.flag"/>
+                          <b>{{item.country_code_id}}</b>
+                      </ng-template>
+                  <ng-template ng-option-tmp let-item="item" let-index="index">
+                      <b>{{item.country_code_id}}</b>
+                      <img height="20" width="20" [src]="item.flag"/>
+                  </ng-template>
+               </ng-select>
+              </div>
+          </div>
+          <div class="col-md-12 input-group">
+            <span class="input-group-append">
+              <button class="btn btn-secondary title-button" type="button">البلد</button>
+            </span>
+            <select value='supplier.country_name'  class="form-control" (change)="onCountryChange($event.target.value)" data-size="7" formControlName="country_id"  title="المستخدم" >
+              <option *ngFor="let country of countries" [value]="country.country_id">{{country.country_name}}</option>
+          </select>
+          </div>
+          <div class="col-md-12 input-group">
+            <span class="input-group-append">
+              <button class="btn btn-secondary title-button" type="button">المدينة</button>
+            </span>
+            <select value='supplier.city_name'  class="form-control" data-size="7" formControlName="city_id"   title="المدينة" >
+                <option *ngFor="let city of cities"  [value]="city.city_id">{{ city.city_name}}</option>
+            </select>
+          </div>
+            </div>
+          </div>
+        </div>
+        <button type="button"  class="btn btn-primary" (click)="submitEditSupplierForm(supplierForm , supplier.supplier_id)">حفظ</button>
+        <button type="button" class="btn btn-danger" (click)="hideDialog()">الغاء</button>
+        </form>
+       </ng-template>
+      </p-dialog>
+
+     <p-dialog [(visible)]="newSupplierDialog" [style]="{width: '750px'}" header="اضافة مورد جديد" [modal]="true" styleClass="p-fluid">
+      <ng-template pTemplate="content">
+
+      <form [formGroup]="newSupplierForm">
+        <div class="content with-padding padding-bottom-0">
+            <div class="row">
+                <div class="col-xl-12">
+                  <div class="col-md-12">
+                    <div class="submit-field input-group"
+                     [ngClass]="{'has-error': newSupplierForm.get('supplier_fullname')?.errors &&
+                                 (newSupplierForm.get('supplier_fullname').touched || newSupplierForm.get('supplier_fullname').dirty)}">
+                                 <span class="input-group-append">
+                                  <button class="btn btn-secondary title-button" type="button">الاسم الكامل</button>
+                                </span>
+                        <input  type="text" class="form-control" formControlName='supplier_fullname'>
+                        <span class="alert alert-danger" *ngIf="newSupplierForm.get('supplier_fullname')?.errors &&
+                        (newSupplierForm.get('supplier_fullname').touched || newSupplierForm.get('supplier_fullname').dirty)">
+                        <span  *ngIf="newSupplierForm.get('supplier_fullname').errors.required">اسم الكامل مطلوب</span>
+                        <span  *ngIf="newSupplierForm.get('supplier_fullname').errors?.minlength  || newSupplierForm.get('supplier_fullname').errors?.maxlength ">اقل عدد حروف متاح 8 واكثر عدد حروف متاح 50</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                  <div class="submit-field input-group"
+                   [ngClass]="{'has-error': newSupplierForm.get('supplier_email')?.errors &&
+                               (newSupplierForm.get('supplier_email').touched || newSupplierForm.get('supplier_email').dirty)}">
+                               <span class="input-group-append">
+                                <button class="btn btn-secondary title-button" type="button">الايميل</button>
+                              </span>
+                      <input  type="text" class="form-control" formControlName='supplier_email'>
+                      <span class="alert alert-danger" *ngIf="newSupplierForm.get('supplier_email')?.errors &&
+                      (newSupplierForm.get('supplier_email').touched || newSupplierForm.get('supplier_email').dirty)">
+                      <span  *ngIf="newSupplierForm.get('supplier_email').errors?.required">الايميل مطلوب</span>
+                      <span  *ngIf="newSupplierForm.get('supplier_email').errors?.email">الايميل غير صحيح</span>
+                      </span>
+                  </div>
+              </div>
+              <div class="col-md-12">
+                <div class="input-group">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button">الهاتف </button>
+                    </span>
+                    <ng-select  class="form-control" data-size="7"   formControlName="supplier_phone_code">
+                      <ng-option id="first" hidden="hidden" selected value="" >  <img height="20" width="20" src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Flag_of_Saudi_Arabia.svg"/> 966</ng-option>
+                      <ng-option *ngFor="let item of countriesCode" [value]="item.country_code_id">
+                        <img height="20" width="20" [src]="item.flag"/> {{item.country_code_id}}
+                      </ng-option>
+                    </ng-select>
+                    <input  type="tel" class="form-control" formControlName='supplier_phone_phone'   minlength="9"  maxlength="11">
+
+                </div>
+            </div>
+
+                <div class="col-md-12 input-group">
+                  <span class="input-group-append">
+                    <button class="btn btn-secondary title-button" type="button">البلد</button>
+                  </span>
+                  <select  class="form-control" (change)="onCountryChange($event.target.value)" data-size="7" formControlName="country_id"  title="المستخدم" >
+                    <option *ngFor="let country of countries" [value]="country.country_id">{{country.country_name}}</option>
+                </select>
+                </div>
+                <div class="col-md-12 input-group">
+                  <span class="input-group-append">
+                    <button class="btn btn-secondary title-button" type="button">المدينة</button>
+                  </span>
+                  <select  class="form-control" data-size="7" formControlName="city_id"   title="المدينة" >
+                      <option *ngFor="let city of cities"  [value]="city.city_id">{{ city.city_name}}</option>
+                  </select>
+                </div>
+                </div>
+            </div>
+          </div>
+                  <button type="button" class="btn btn-primary" (click)="submitCreateForm(newSupplierForm)">حفظ</button>
+                  <button type="button " class="btn btn-danger"  (click)="hideSupplierDialog()">الغاء</button>
+        </form>
+       </ng-template>
+      </p-dialog>
+
+  <!-- Start order details Dialog-->
+
+   <p-dialog *ngIf="supplierOrder" [(visible)]="detailsDialog" [style]="{width: '750px'}" header="طلبات العميل" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+      <div class="row">
+        عدد الطلبات للعميل : {{supplierOrderlength}}
+        <div class="col-sm-12 col-md-12"  *ngFor="let order of supplierOrders">
+          <br/>
+          <div class="card">
+            <div class="card-header">
+            بيانات الطلب
+            </div>
+            <div class="card-body">
+              <div class="row">
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button">رقم الطلب </button>
+                    </span>
+                    <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.order_id}}>
+                  </div>
+
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button">الرقم المرجعي للطلب</button>
+                    </span>
+                    <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.order_ref_key}}>
+                  </div>
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button">وزن الطلب </button>
+                    </span>
+                    <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.order_weight}}>
+                  </div>
+
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button">سعر الطلب </button>
+                    </span>
+                    <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.order_price}}>
+                  </div>
+
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn-secondary title-button" type="button"> نوع الطلب</button>
+                    </span>
+                    <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.order_type}}>
+                  </div>
+
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button"> رقم الخدمة</button>
+                    </span>
+                    <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.service_code}}>
+                  </div>
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button"> حالة الطلب</button>
+                    </span>
+                    <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.status_code}}>
+                  </div>
+
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button"> تاريخ  الطلب </button>
+                    </span>
+                    <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.order_date}}>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+              بيانات المرسل
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button"> رقم المرسل </button>
+                    </span>
+                    <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.supplier_id}}>
+                  </div>
+
+                    <div class="input-group col-sm-6 col-md-6">
+                      <span class="input-group-append">
+                        <button class="btn btn-secondary title-button" type="button">اسم المرسل </button>
+                      </span>
+                      <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.sender_name}}>
+                    </div>
+
+                    <div class="input-group col-sm-6 col-md-6">
+                      <span class="input-group-append">
+                        <button class="btn btn-secondary title-button" type="button">  هاتف المرسل</button>
+                      </span>
+                      <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.sender_mobile}}>
+                    </div>
+                    <div class="input-group col-sm-6 col-md-6">
+                      <span class="input-group-append">
+                        <button class="btn btn-secondary title-button" type="button"> مدينة ارسال الطلب </button>
+                      </span>
+                      <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.sender_city_name}}>
+                    </div>
+
+                    <div class="input-group col-sm-12 col-md-12">
+                      <span class="input-group-append">
+                        <button class="btn btn-secondary title-button" type="button"> تاريخ ارسال الطلب </button>
+                      </span>
+                      <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.sender_date}}>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                بيانات استلام الطلب
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                      <div class="input-group col-sm-6 col-md-6">
+                        <span class="input-group-append">
+                          <button class="btn btn-secondary title-button" type="button">اسم المستلم </button>
+                        </span>
+                        <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.deliver_to_name}}>
+                      </div>
+
+                      <div class="input-group col-sm-6 col-md-6">
+                        <span class="input-group-append">
+                          <button class="btn btn-secondary title-button" type="button">   هاتف </button>
+                        </span>
+                        <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.deliver_to_mobile}}>
+                      </div>
+                      <div class="input-group col-sm-6 col-md-6">
+                        <span class="input-group-append">
+                          <button class="btn btn-secondary title-button" type="button"> مدينة استلام الطلب </button>
+                        </span>
+                        <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.deliver_to_city_name}}>
+                      </div>
+
+                      <div class="input-group col-sm-6 col-md-6">
+                        <span class="input-group-append">
+                          <button class="btn btn-secondary title-button" type="button"> تاريخ تسليم الطلب </button>
+                        </span>
+                        <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.delivery_date}}>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <hr/>
+            </div>
+          </div>
+          <button type="button " class="btn btn-danger"  (click)="hideSupplierDialogDatails()">الغاء</button>
+     </ng-template>
+    </p-dialog>
+
+
+    </div>
+   </div>
+  </div>
+

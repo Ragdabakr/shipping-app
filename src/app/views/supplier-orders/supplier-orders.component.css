@@ -1,0 +1,36 @@
+.input-group{
+  margin-bottom: 20px;
+}
+.title-button{
+  width:150px;
+}
+.badge{
+
+    font-size: 10px;
+    text-align: center;
+    padding-bottom: 5px;
+    margin-top: 18px;
+    margin-right: 23%;
+    padding:10px !important;
+    font-family: inherit;
+}
+.orange{
+  background-color:rgb(241, 178, 231)
+}
+.greenyellow{
+  background-color: greenyellow;
+}
+.green{
+  background-color: rgb(124, 163, 64);
+  color:#ffffff;
+}
+.red{
+  background-color: rgb(231, 36, 68);
+  color:#ffffff;
+}
+.p-datatable .p-datatable-tbody > tr > td {
+text-align: none;
+  border: 1px solid #e9ecef;
+  border-width: 0 0 1px 0;
+  padding: 1rem 1rem;
+}

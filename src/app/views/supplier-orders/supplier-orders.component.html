@@ -1,0 +1,521 @@
+
+
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <i class="fa fa-align-justify"></i> طلبات الموردين
+        </div>
+        <div class="card-body">
+          <p-toolbar styleClass="p-mb-4">
+            <ng-template pTemplate="left">
+                <button label="New" icon="pi pi-plus" type="button" class="btn btn-sm btn-primary" (click)="createNewCustomerOrder()">اضافة طلب جديد</button>
+            </ng-template>
+          </p-toolbar>
+
+        <p-table #dt [value]="suppliersOrders" dataKey="order_id" [rows]="10" [showCurrentPageReport]="true" [paginator]="true" [rowsPerPageOptions]="[5,10,15,20]"
+        currentPageReportTemplate="إظهار {first} الى {last} من  {totalRecords} الطلبات" [style]="{'width':'100%','overflow':'auto!important'}"
+        [resizableColumns]="true" columnResizeMode="expand" styleClass="ui-table-customers" [autoLayout]="true"
+        [responsive]="true" selectionMode="single"
+        [filterDelay]="0" [globalFilterFields]="['supplier_fullname','sender_mobile','order_date','sender_date','delivery_date','status_code']">
+
+        <ng-template pTemplate="caption">
+          <div class="ui-table-globalfilter-container">
+            <div class="form-group">
+              <div class="input-group">
+                <input class="form-control" pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="بحث" >
+                <div class="input-group-append">
+                  <span class="input-group-text"><i class="fa fa-search"></i></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+              <th pSortableColumn="customer_fullname"> اسم المرسل <p-sortIcon field="customer_fullname"></p-sortIcon></th>
+              <th pSortableColumn="sender_mobile">هاتف المرسل <p-sortIcon field="sender_mobile"></p-sortIcon></th>
+              <th pSortableColumn="order_date">تاريخ الطلب <p-sortIcon field="order_date"></p-sortIcon></th>
+              <th pSortableColumn="sender_date">تاريخ الارسال <p-sortIcon field="sender_date"></p-sortIcon></th>
+              <th pSortableColumn="delivery_date"> تاريخ التسليم <p-sortIcon field="delivery_date"></p-sortIcon></th>
+              <th pSortableColumn="status_code"> حالة الطلب<p-sortIcon field="status_code"></p-sortIcon></th>
+              <th >تعديل</th>
+              <th >التفاصيل</th>
+          </tr>
+       </ng-template>
+        <ng-template pTemplate="body" let-order>
+          <tr>
+              <td>{{order.sender_name}}</td>
+              <td>{{order.sender_mobile}}</td>
+              <td dir="ltr">{{order.order_date | date :'dd/MM/yyyy - hh:mm a' }}</td>
+              <td dir="ltr">{{order.sender_date | date :'dd/MM/yyyy - hh:mm a' }}</td>
+              <td dir="ltr">{{order.delivery_date | date :'dd/MM/yyyy - hh:mm a' }}</td>
+              <td *ngIf="order.status_code === 'قيد التنفيذ'"  class="badge orange">{{order.status_code}}</td>
+              <td *ngIf="order.status_code === 'تم الشحن'"  class="badge greenyellow">{{order.status_code}}</td>
+              <td *ngIf="order.status_code === 'تم الاستلام'"  class="badge green">{{order.status_code}}</td>
+              <td *ngIf="order.status_code === 'تم الالغاء'"  class="badge red">{{order.status_code}}</td>
+              <td>
+                <button type="button" class="btn btn-sm btn-warning" (click)="editOrderStatus(order);">تعديل</button>
+             </td>
+              <td>
+                  <button type="button" class="btn btn-sm btn-primary" (click)="details(order);">التفاصيل</button>
+              </td>
+           </tr>
+        </ng-template>
+      </p-table>
+     </div>
+   </div>
+   <!-- create details Dialog-->
+   <p-dialog [(visible)]="detailsDialog" [style]="{width: '750px'}" header="تفاصيل الطلب" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+      <div class="row">
+        <div class="col-sm-12 col-md-12">
+          <div class="card">
+            <div class="card-header">
+            بيانات الطلب
+            </div>
+            <div class="card-body">
+              <div class="row">
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button">رقم الطلب </button>
+                    </span>
+                    <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.order_id}}>
+                  </div>
+
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button">الرقم المرجعي للطلب</button>
+                    </span>
+                    <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.order_ref_key}}>
+                  </div>
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button">وزن الطلب </button>
+                    </span>
+                    <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.order_weight}}>
+                  </div>
+
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button">سعر الطلب </button>
+                    </span>
+                    <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.order_price}}>
+                  </div>
+
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button"> نوع الطلب</button>
+                    </span>
+                    <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.order_type}}>
+                  </div>
+
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button"> رقم الخدمة</button>
+                    </span>
+                    <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.service_code}}>
+                  </div>
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button"> حالة الطلب</button>
+                    </span>
+                    <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.status_code}}>
+                  </div>
+
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button"> تاريخ  الطلب </button>
+                    </span>
+                    <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.order_date}}>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+              بيانات المرسل
+              </div>
+              <div class="card-body">
+                <div class="row">
+                    <div class="input-group col-sm-6 col-md-6">
+                      <span class="input-group-append">
+                        <button class="btn btn-secondary title-button" type="button">اسم المرسل </button>
+                      </span>
+                      <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.sender_name}}>
+                    </div>
+
+                    <div class="input-group col-sm-6 col-md-6">
+                      <span class="input-group-append">
+                        <button class="btn btn-secondary title-button" type="button">  هاتف المرسل</button>
+                      </span>
+                      <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.sender_mobile}}>
+                    </div>
+                    <div class="input-group col-sm-6 col-md-6">
+                      <span class="input-group-append">
+                        <button class="btn btn-secondary title-button" type="button"> بلد ارسال الطلب </button>
+                      </span>
+                      <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.sender_country_name}}>
+                    </div>
+                    <div class="input-group col-sm-6 col-md-6">
+                      <span class="input-group-append">
+                        <button class="btn btn-secondary title-button" type="button"> مدينة ارسال الطلب </button>
+                      </span>
+                      <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.sender_city_name}}>
+                    </div>
+
+                    <div class="input-group col-sm-12 col-md-12">
+                      <span class="input-group-append">
+                        <button class="btn btn-secondary title-button" type="button"> تاريخ ارسال الطلب </button>
+                      </span>
+                      <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.sender_date}}>
+                    </div>
+                    <div class="input-group col-sm-12 col-md-12">
+                      <span class="input-group-append">
+                        <button class="btn btn-secondary title-button" type="button"> عنوان ارسال الطلب </button>
+                      </span>
+                      <textarea id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.sender_lat_lng}}></textarea>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                بيانات استلام الطلب
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                      <div class="input-group col-sm-6 col-md-6">
+                        <span class="input-group-append">
+                          <button class="btn btn-secondary title-button" type="button">اسم المستلم </button>
+                        </span>
+                        <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.deliver_to_name}}>
+                      </div>
+
+                      <div class="input-group col-sm-6 col-md-6">
+                        <span class="input-group-append">
+                          <button class="btn btn-secondary title-button" type="button">   هاتف </button>
+                        </span>
+                        <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.deliver_to_mobile}}>
+                      </div>
+                      <div class="input-group col-sm-6 col-md-6">
+                        <span class="input-group-append">
+                          <button class="btn btn-secondary title-button" type="button"> بلد استلام الطلب </button>
+                        </span>
+                        <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.deliver_country_name}}>
+                      </div>
+                      <div class="input-group col-sm-6 col-md-6">
+                        <span class="input-group-append">
+                          <button class="btn btn-secondary title-button" type="button"> مدينة استلام الطلب </button>
+                        </span>
+                        <input id="appendedInputButtons"  size="16"  class="form-control" type="text" value={{order.deliver_to_city_name}}>
+                      </div>
+
+                      <div class="input-group col-sm-6 col-md-12">
+                        <span class="input-group-append">
+                          <button class="btn btn-secondary title-button" type="button"> تاريخ تسليم الطلب </button>
+                        </span>
+                        <input id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.delivery_date}}>
+                      </div>
+
+                      <div class="input-group col-sm-12 col-md-12">
+                        <span class="input-group-append">
+                          <button class="btn btn-secondary title-button" type="button"> عنوان استلام الطلب </button>
+                        </span>
+                        <textarea id="appendedInputButtons"   size="16"  class="form-control" type="text" value={{order.deliver_to_lat_lng}}></textarea>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+            </div>
+          </div>
+          <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text button btn-danger " (click)="hideDetailsOrder()">اغلاق</button>
+     </ng-template>
+    </p-dialog>
+
+  <!-- create order Dialog-->
+  <p-dialog [(visible)]="newUserDialog" [style]="{width: '750px'}" header="اضافة طلب جديد" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+
+    <form [formGroup]="neworderForm">
+      <div class="content with-padding padding-bottom-0">
+          <div class="row">
+              <div class="col-xl-12">
+
+
+                <div class="row">
+                  <div class="col-sm-12 col-md-12">
+                    <div class="card">
+                      <div class="card-header">
+                      بيانات الطلب
+                      </div>
+                      <div class="card-body">
+                        <div class="row">
+
+                            <div class="input-group col-sm-6 col-md-6">
+                              <span class="input-group-append">
+                                <button class="btn btn-secondary title-button" type="button">وزن الطلب </button>
+                              </span>
+                              <input id="appendedInputButtons"  size="16"  formControlName='order_weight'  class="form-control" type="text" >
+                            </div>
+
+                            <div class="input-group col-sm-6 col-md-6">
+                              <span class="input-group-append">
+                                <button class="btn btn-secondary title-button" type="button">سعر الطلب </button>
+                              </span>
+                              <input id="appendedInputButtons"   size="16"  formControlName='order_price'  class="form-control" type="text">
+                            </div>
+
+                              <div class="input-group col-sm-6 col-md-6">
+                                <span class="input-group-append">
+                                  <button class="btn btn-secondary title-button" type="button"> نوع الطلب </button>
+                                </span>
+                                <select  class="form-control" data-size="7" formControlName="order_type"  title="المستخدم" >
+                                  <option *ngFor="let type of orderTypes"  [ngValue]="type.order_type_name">{{type.order_type_name}}</option>
+                              </select>
+                              </div>
+
+                            <div class="input-group col-sm-6 col-md-6">
+                              <span class="input-group-append">
+                                <button class="btn btn-secondary title-button" type="button"> رقم الخدمة</button>
+                              </span>
+                              <input id="appendedInputButtons"   size="16"  formControlName='service_code' class="form-control" type="text" >
+                            </div>
+                             <div class="input-group col-sm-12 col-md-12">
+                                <span class="input-group-append">
+                                  <button class="btn btn-secondary title-button" type="button"> حالة الطلب </button>
+                                </span>
+                                <select  class="form-control" data-size="7" formControlName="status_code"  title="المستخدم" >
+                                  <option *ngFor="let status of OrderStatus"  [ngValue]="status.order_status_name">{{status.order_status_name}}</option>
+                              </select>
+                              </div>
+
+                            <div class="input-group col-sm-12 col-md-12">
+                              <span class="input-group-append">
+                                <button class="btn btn-secondary title-button" type="button"> تاريخ  الطلب </button>
+                              </span>
+                              <input id="appendedInputButtons"   size="16" formControlName='order_date'  class="form-control" type="date">
+                            </div>
+
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="card">
+                        <div class="card-header">
+                        بيانات المرسل
+                        </div>
+                        <div class="card-body">
+                          <div class="row">
+                              <div class="input-group col-sm-6 col-md-12">
+                                <span class="input-group-append">
+                                  <button class="btn btn-secondary title-button" type="button">اسم المرسل </button>
+                                </span>
+                                   <select (change)="onCustomerChange($event.target.value)"   class="form-control" data-size="7" formControlName='sender_name'   title="المستخدم" >
+                                  <option  *ngFor="let supplier of suppliers"   [value]="supplier.supplier_fullname">{{supplier.supplier_fullname}}</option>
+                                 </select>
+                              </div>
+
+                              <div class="input-group col-sm-6 col-md-12">
+                                <span class="input-group-append">
+                                  <button class="btn btn-secondary title-button" type="button">  هاتف المرسل</button>
+                                </span>
+                                <ng-select  class="form-control" data-size="7"   formControlName="sender_mobile_code">
+                                  <ng-option id="first" hidden="hidden" selected value="" >  <img height="20" width="20" src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Flag_of_Saudi_Arabia.svg"/> 966</ng-option>
+                                  <ng-option *ngFor="let item of countriesCode" [value]="item.country_code_id">
+                                    <img height="20" width="20" [src]="item.flag"/> {{item.country_code_id}}
+                                  </ng-option>
+                                </ng-select>
+                                <input id="appendedInputButtons"   size="16" formControlName='sender_mobile_phone' class="form-control" type="tel"  minlength="9"  maxlength="11" >
+                                <!-- <ng-select
+                                    maxLength="30"
+                                    [items]="countriesCode"
+                                    bindValue="country_code_id"
+                                    [bindLabel]="'country_code_id'"
+                                    [active]="countriesCode"
+                                    (selected)="selected($event)"
+                                    formControlName="sender_mobile_code">
+                                    <ng-template  ng-label-tmp let-item="item">
+                                              {{item.country_code_id}}<img height="30" width="30" [src]="item.flag"/>
+                                          </ng-template>
+                                          <ng-template  ng-option-tmp let-item="item" let-index="index">
+                                            <img height="15" width="15" [src]="item.flag"/>
+                                            <b>{{item.country_code_id}}</b>
+                                        </ng-template>
+                                    <ng-template ng-option-tmp let-item="item" let-index="index">
+                                        <b>{{item.country_code_id}}</b>
+                                        <img height="20" width="20" [src]="item.flag"/>
+                                    </ng-template>
+                                 </ng-select> -->
+                              </div>
+                              <div class="input-group col-sm-6 col-md-6">
+                                <span class="input-group-append">
+                                  <button class="btn btn-secondary title-button" type="button"> بلد التسليم </button>
+                                </span>
+                                <select  class="form-control" (change)="onCountryChange($event.target.value)" data-size="7" formControlName="sender_country_id"  title="المستخدم" >
+                                  <option *ngFor="let country of countries" [value]="country.country_id">{{country.country_name}}</option>
+                              </select>
+                              </div>
+                              <div class="input-group col-sm-6 col-md-6">
+                                <span class="input-group-append">
+                                  <button class="btn btn-secondary title-button" type="button"> مدينة ارسال الطلب </button>
+                                </span>
+                                <select  class="form-control"  data-size="7" formControlName="sender_city_id"  title="المستخدم" >
+                                  <option *ngFor="let city of cities"  [value]="city.city_id">{{city.city_name}}</option>
+                              </select>
+                              </div>
+
+                              <div class="input-group col-sm-12 col-md-12">
+                                <span class="input-group-append">
+                                  <button class="btn btn-secondary title-button" type="button"> تاريخ ارسال الطلب </button>
+                                </span>
+                                <input id="appendedInputButtons"   size="16" formControlName='sender_date'  class="form-control" type="date" >
+                              </div>
+
+                              <div class="input-group col-sm-12 col-md-12">
+                                <span class="input-group-append">
+                                  <button class="btn btn-secondary title-button" type="button"> عنوان ارسال الطلب  </button>
+                                </span>
+                                <textarea id="appendedInputButtons"   size="16"  formControlName='sender_lat_lng' class="form-control" type="text"></textarea>
+                              </div>
+
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="card">
+                          <div class="card-header">
+                          بيانات استلام الطلب
+                          </div>
+                          <div class="card-body">
+                            <div class="row">
+                                <div class="input-group col-sm-6 col-md-12">
+                                  <span class="input-group-append">
+                                    <button class="btn btn-secondary title-button" type="button">اسم المستلم </button>
+                                  </span>
+                                  <input id="appendedInputButtons"  size="16"  formControlName='deliver_to_name' class="form-control" type="text" >
+                                </div>
+
+                                <div class="input-group col-sm-6 col-md-12">
+                                  <span class="input-group-append">
+                                    <button class="btn btn-secondary title-button" type="button">   هاتف المستلم </button>
+                                  </span>
+                                  <ng-select  class="form-control" data-size="7"   formControlName="deliver_to_mobile_code">
+                                    <ng-option id="first" hidden="hidden" selected value="" >  <img height="20" width="20" src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Flag_of_Saudi_Arabia.svg"/> 966</ng-option>
+                                    <ng-option *ngFor="let item of countriesCode" [value]="item.country_code_id">
+                                      <img height="20" width="20" [src]="item.flag"/> {{item.country_code_id}}
+                                    </ng-option>
+                                  </ng-select>
+                                  <input id="appendedInputButtons"   size="16" formControlName='deliver_to_mobile_phone' minlength="9"  maxlength="11" class="form-control" type="text" >
+                                  <!-- <ng-select
+                                  maxLength="30"
+                                  [items]="countriesCode"
+                                  bindValue="country_code_id"
+                                  [bindLabel]="'country_code_id'"
+                                  [active]="countriesCode"
+                                  (selected)="selected($event)"
+                                  formControlName="deliver_to_mobile_code">
+                                  <ng-template  ng-label-tmp let-item="item">
+                                            {{item.country_code_id}}<img height="30" width="30" [src]="item.flag"/>
+                                        </ng-template>
+                                        <ng-template  ng-option-tmp let-item="item" let-index="index">
+                                          <img height="15" width="15" [src]="item.flag"/>
+                                          <b>{{item.country_code_id}}</b>
+                                      </ng-template>
+                                  <ng-template ng-option-tmp let-item="item" let-index="index">
+                                      <b>{{item.country_code_id}}</b>
+                                      <img height="20" width="20" [src]="item.flag"/>
+                                  </ng-template>
+                               </ng-select> -->
+                                </div>
+                                <div class="input-group col-sm-6 col-md-6">
+                                  <span class="input-group-append">
+                                    <button class="btn btn-secondary title-button" type="button"> بلد الاستلام </button>
+                                  </span>
+                                  <select  class="form-control" data-size="7" (change)="onDeliverCountryChange($event.target.value)"  formControlName="deliver_country_id"  title="المستخدم" >
+                                    <option *ngFor="let country of countries"  [value]="country.country_id">{{country.country_name}}</option>
+                                </select>
+                                </div>
+                                <div class="input-group col-sm-6 col-md-6">
+                                  <span class="input-group-append">
+                                    <button class="btn btn-secondary title-button" type="button"> مدينة استلام الطلب </button>
+                                  </span>
+                                  <select  class="form-control" data-size="7" formControlName="deliver_to_city_id"  title="المستخدم" >
+                                    <option *ngFor="let city of deliverCities"  [value]="city.city_id">{{city.city_name}}</option>
+                                </select>
+                                </div>
+
+                                <div class="input-group col-sm-12 col-md-12">
+                                  <span class="input-group-append">
+                                    <button class="btn btn-secondary title-button" type="button"> تاريخ تسليم الطلب </button>
+                                  </span>
+                                  <input id="appendedInputButtons"   size="16"  formControlName='delivery_date' class="form-control" type="date">
+                                </div>
+                                <div class="input-group col-sm-12 col-md-12">
+                                  <span class="input-group-append">
+                                    <button class="btn btn-secondary title-button" type="button"> عنوان استلام الطلب  </button>
+                                  </span>
+                                  <textarea id="appendedInputButtons"   size="16"  formControlName='deliver_to_lat_lng' class="form-control" type="text"></textarea>
+                                </div>
+
+                              </div>
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+                 </div>
+              </div>
+          </div>
+
+          <div class="buttons">
+              <input type="submit"  (click)="submitCreateOrderForm(neworderForm)" class="button btn-primary  ripple-effect margin-top-10" value="حفظ">
+              <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text button btn-danger " (click)="hideUserDialog()">الغاء</button>
+          </div>
+      </form>
+     </ng-template>
+    </p-dialog>
+
+       <!-- create details Dialog-->
+   <p-dialog [(visible)]="orderStatusDialog" [style]="{width: '750px'}" header="تعديل حالة الطلب" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+      <div class="row">
+        <div class="col-sm-12 col-md-12">
+          <div class="card">
+            <div class="card-header">
+           تعديل الطلب
+            </div>
+            <div class="card-body">
+              <form [formGroup]="statusOrderForm">
+              <div class="row">
+                  <div class="input-group col-sm-6 col-md-6">
+                    <span class="input-group-append">
+                      <button class="btn btn-secondary title-button" type="button"> حالة الطلب</button>
+                    </span>
+                    <select  class="form-control" data-size="7" formControlName="status_code" value="{{order.status_code}}" title="حالة الطلب" >
+                      <option *ngFor="let code of OrderStatus" [value]="code.order_status_name">{{code.order_status_name}}</option>
+                  </select>
+                  </div>
+
+                </div>
+                <div class="buttons">
+                  <input type="submit"  (click)="submitorder(statusOrderForm , order.order_id)" class="button btn-primary  ripple-effect margin-top-10" value="حفظ">
+                  <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text button btn-danger " (click)="hideUserDialog()">الغاء</button>
+              </div>
+              </form>
+              </div>
+            </div>
+            </div>
+          </div>
+     </ng-template>
+    </p-dialog>
+
+  </div>
+ </div>
+</div>
+
