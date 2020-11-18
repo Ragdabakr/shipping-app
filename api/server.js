@@ -52,7 +52,11 @@ app.use('/api/v1', lookupRoute);
 // app.use ('/api-docs',swaggerUi.serve,swaggerUi.setup(swaggerDocument))   ;
 
 
-app.listen(env.port).on('listening', () => {
-  console.log(` Server 🚀 are live on ${env.port} `);
+// app.listen(env.port).on('listening', () => {
+//   console.log(` Server 🚀 are live on ${env.port} `);
+// });
+
+app.listen(process.env.PORT || 8080, function(){
+  console.log("Express server listening on port %d in %s mode");
 });
 export default app;
