@@ -99,6 +99,15 @@ CREATE TABLE shipping.app_country (
 	CONSTRAINT app_country_pkey PRIMARY KEY (country_id)
 );
 
+
+CREATE TABLE shipping.country_code (
+	country_code_id serial NOT NULL,
+	phonecode varchar(300) NOT NULL,
+	flag varchar(1000) NOT NULL,
+	arcountryname varchar(300) NOT NULL,
+	CONSTRAINT app_country_code_pkey PRIMARY KEY (country_code_id)
+);
+
 -- shipping.customer definition
 
 -- Drop table

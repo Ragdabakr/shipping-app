@@ -21,7 +21,6 @@ AS SELECT zp.zone_price_id,
     zp.created_on,
     ac.city_name,
     ac.city_id
-<<<<<<< HEAD
    FROM shipping.zone_price zp
      JOIN shipping.app_city ac ON ac.zone_code::text = zp.zone_code::text;
 
