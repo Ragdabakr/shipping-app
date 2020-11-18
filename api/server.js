@@ -56,7 +56,8 @@ app.use('/api/v1', lookupRoute);
 //   console.log(` Server 🚀 are live on ${env.port} `);
 // });
 
-app.listen(process.env.PORT || 8080, function(){
-  console.log("Express server listening on port %d in %s mode");
+const port = process.env.PORT || 8000;
+server.listen(port, () => {
+  console.log("App is running on port " + port);
 });
 export default app;
