@@ -52,9 +52,9 @@ app.use('/api/v1', lookupRoute);
 // app.use ('/api-docs',swaggerUi.serve,swaggerUi.setup(swaggerDocument))   ;
 
 
-var port = env.PORT || 8080;
-app.listen(port, () => {
-  console.log("App is running on port " + port);
+const PORT = process.env.PORT || 8080;
+app.listen(PORT,function(){
+	console.log("running 8080");
 });
 
 // app.listen(env.port).on('listening', () => {
