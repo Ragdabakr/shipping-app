@@ -52,8 +52,13 @@ app.use('/api/v1', lookupRoute);
 // app.use ('/api-docs',swaggerUi.serve,swaggerUi.setup(swaggerDocument))   ;
 
 
-app.listen(env.port).on('listening', () => {
-  console.log(` Server 🚀 are live on ${env.port} `);
+var port = env.PORT || 8080;
+app.listen(port, () => {
+  console.log("App is running on port " + port);
 });
+
+// app.listen(env.port).on('listening', () => {
+//   console.log(` Server 🚀 are live on ${env.port} `);
+// });
 
 export default app;
