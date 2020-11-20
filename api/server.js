@@ -52,7 +52,7 @@ app.use('/api/v1', lookupRoute);
 // app.use ('/api-docs',swaggerUi.serve,swaggerUi.setup(swaggerDocument))   ;
 
 
-const PORT = env.port || 8080;
+const PORT = env.PORT || 8080;
 app.listen(PORT,function(){
 	console.log("running 8080");
 });
