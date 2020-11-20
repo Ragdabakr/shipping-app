@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "mocha --timeout 10000 -r esm test/**/*.js",
-    "start": "nodemon --watch . --exec babel-node -- server"
+    "start": "node server.js"
+
   },
   "author": "Mean STK PRG #3",
   "license": "ISC",
@@ -56,3 +57,6 @@
     "fsevents": "^2.1.3"
   }
 }
+
+
+

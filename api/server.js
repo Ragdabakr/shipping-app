@@ -62,3 +62,4 @@ app.listen(PORT,function(){
 // });
 
 export default app;
+// "start": "nodemon --watch . --exec babel-node -- server"
