@@ -53,10 +53,9 @@ app.use('/api/v1', lookupRoute);
 
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT,function(){
-	console.log("running 8080");
+app.listen(PORT, () => {
+  console.log("App is running on port " + port);
 });
-
 // app.listen(env.port).on('listening', () => {
 //   console.log(` Server 🚀 are live on ${env.port} `);
 // });
