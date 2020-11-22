@@ -20,7 +20,7 @@
   "scripts": {
     "ng": "ng",
     "postinstall": "ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points",
-    "start": "node -r esm api/server.js",
+    "start": "node api/server.js",
     "build": "ng build --prod --aot --buildOptimizer --commonChunk --vendorChunk --optimization --progress",
     "test": "ng test",
     "lint": "ng lint",
@@ -119,3 +119,5 @@
     "npm": ">= 6"
   }
 }
+
+
