@@ -52,8 +52,8 @@ app.use('/api/v1', lookupRoute);
 // app.use ('/api-docs',swaggerUi.serve,swaggerUi.setup(swaggerDocument))   ;
 
 
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
   console.log("App is running on port " + port);
 });
 // app.listen(env.port).on('listening', () => {
