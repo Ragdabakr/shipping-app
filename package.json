@@ -95,6 +95,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.901.9",
+    "@angular-devkit/core": "^11.0.2",
     "@angular/cli": "^9.1.1",
     "@angular/compiler-cli": "^9.1.1",
     "@angular/language-service": "^9.1.1",

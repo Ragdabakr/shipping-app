@@ -29,6 +29,12 @@ app.use(cors());
 // Add middleware for parsing JSON and urlencoded data and populating `req.body`
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(express.static(path.join(__dirname,'../dist/angularCoreUI/')));
+
+app.get('/',function(req,res){
+  res.send('start the node server on port : '+ env.port);
+  res.sendFile(path.join(__dirname,'../dist/angularCoreUI/index.html'));
+});
 
 app.get('/',function(req,res){
   res.send('start the node server on port : '+ env.port);
@@ -48,7 +54,7 @@ app.use('/api/v1', lookupRoute);
 app.use('/api/v1', supplierRoute);
 app.use('/api/v1', lookupRoute);
 
-// >>>>>>> c913ae83738c0d1b9410fb336270714d4085f330
+
 // app.use ('/api-docs',swaggerUi.serve,swaggerUi.setup(swaggerDocument))   ;
 
 
