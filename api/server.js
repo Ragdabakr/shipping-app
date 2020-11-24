@@ -3,6 +3,7 @@ import bodyParser  from 'body-parser';
 //import 'babel-polyfill';
 import cors from 'cors';
 import env from './env';
+import path from 'path';
 import userRoute from './routes/userRoute';
 
 
@@ -53,6 +54,7 @@ app.use('/api/v1', orderRoute);
 app.use('/api/v1', lookupRoute);
 app.use('/api/v1', supplierRoute);
 app.use('/api/v1', lookupRoute);
+
 
 
 // app.use ('/api-docs',swaggerUi.serve,swaggerUi.setup(swaggerDocument))   ;
