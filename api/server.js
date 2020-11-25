@@ -37,11 +37,11 @@ app.use(express.json());
 //   res.sendFile(path.join(__dirname,'../dist/angularCoreUI/index.html'));
 // });
 
-app.use(express.static(path.join(__dirname,'../dist')));
+app.use(express.static(path.join(__dirname,'..','dist')));
 
 app.get('/',function(req,res){
   res.send('start the node server on port : '+ env.port);
-  res.sendFile(path.join(__dirname,'../dist'));
+  res.sendFile(path.join(__dirname,'..','dist'));
 });
 // app.get('/',function(req,res){
 //   res.send('start the node server on port : '+ env.port);
