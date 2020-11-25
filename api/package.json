@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "mocha --timeout 10000 -r esm test/**/*.js",
-    "start": "nodemon --watch . --exec babel-node -- server"
+    "start": "nodemon --watch . --exec babel-node -- server",
+    "postinstall": "ng build --aot --target=production"
   },
   "author": "Mean STK PRG #3",
   "license": "ISC",
