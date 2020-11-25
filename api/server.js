@@ -37,9 +37,9 @@ app.get('/',function(req,res){
   res.sendFile(path.join(__dirname,'../dist/angularCoreUI/index.html'));
 });
 
-app.get('/',function(req,res){
-  res.send('start the node server on port : '+ env.port);
-});
+// app.get('/',function(req,res){
+//   res.send('start the node server on port : '+ env.port);
+// });
 
 app.use('/api/v1', userRoute);
 app.use('/api/v1', groupRoute);
