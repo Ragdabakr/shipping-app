@@ -30,13 +30,19 @@ app.use(cors());
 // Add middleware for parsing JSON and urlencoded data and populating `req.body`
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname,'../dist/angularCoreUI/')));
+// app.use(express.static(path.join(__dirname,'../dist/angularCoreUI/')));
+
+// app.get('/',function(req,res){
+//   res.send('start the node server on port : '+ env.port);
+//   res.sendFile(path.join(__dirname,'../dist/angularCoreUI/index.html'));
+// });
+
+app.use(express.static(path.join(__dirname,'../dist')));
 
 app.get('/',function(req,res){
   res.send('start the node server on port : '+ env.port);
-  res.sendFile(path.join(__dirname,'../dist/angularCoreUI/index.html'));
+  res.sendFile(path.join(__dirname,'../dist'));
 });
-
 // app.get('/',function(req,res){
 //   res.send('start the node server on port : '+ env.port);
 // });
