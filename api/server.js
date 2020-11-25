@@ -37,14 +37,23 @@ app.use(express.json());
 //   res.sendFile(path.join(__dirname,'../dist/angularCoreUI/index.html'));
 // });
 
-app.use(express.static(path.join(__dirname,'..','dist')));
+// app.use(express.static(path.join(__dirname,'..','dist')));
 // app.get('/',function(req,res){
 //   res.send('start the node server on port : '+ env.port);
 //   res.sendFile(path.join(__dirname,'..','dist'));
 // });
-app.get('/',function(req,res){
-  res.send('start the node server on port : '+ env.port);
-});
+// app.get('/',function(req,res){
+//   res.send('start the node server on port : '+ env.port);
+// });
+
+if (process.env.NODE_ENV === 'production') {
+  const appPath = path.join(__dirname, '..', 'dist');
+  app.use(express.static(appPath));
+
+  app.get('*', function(req, res) {
+    res.sendFile(path.resolve(appPath, 'index.html'));
+  });
+}
 
 app.use('/api/v1', userRoute);
 app.use('/api/v1', groupRoute);
